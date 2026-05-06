@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chit Fund Lucky Draw</title>
+
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:#f5f5f5;
+}
+
+h2{
+    margin-top:20px;
+}
+
+input{
+    width:250px;
+    padding:10px;
+}
+
+button{
+    padding:10px 20px;
+    margin:10px;
+    cursor:pointer;
+}
+
+#cards{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:15px;
+    margin-top:30px;
+}
+
+.card{
+    width:100px;
+    height:100px;
+    perspective:1000px;
+    cursor:pointer;
+}
+
+.inner{
+    width:100%;
+    height:100%;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:1s;
+}
+
+.flipped .inner{
+    transform:rotateY(180deg);
+}
+
+.front,.back{
+    position:absolute;
+    width:100%;
+    height:100%;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    font-weight:bold;
+    backface-visibility:hidden;
+}
+
+.front{
+    background:#222;
+    color:white;
+}
+
+.back{
+    background:#fff;
+    border:2px solid #222;
+    transform:rotateY(180deg);
+    font-size:16px;
+}
+
+.shuffle{
+    animation:spin 1s;
+}
+
+@keyframes spin{
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
+</style>
+</head>
+
+<body>
+
+<h2>Chit Fund Lucky Draw</h2>
+
+<input id="namesInput"
+placeholder="Enter names comma separated">
+
+<br>
+
+<button onclick="startDraw()">Create Poll</button>
+<button onclick="shuffleCards()">Shuffle</button>
+
+<div id="cards"></div>
+
+<script>
+
+let participants=[];
+
+function startDraw(){
+
+    let input=document
+        .getElementById("namesInput")
+        .value;
+
+    participants=input
+        .split(",")
+        .map(x=>x.trim());
+
+    participants=shuffleArray(participants);
+
+    renderCards();
+}
+
+function renderCards(){
+
+    let container=
+        document.getElementById("cards");
+
+    container.innerHTML="";
+
+    participants.forEach((name,index)=>{
+
+        let card=document
+            .createElement("div");
+
+        card.className="card";
+
+        card.innerHTML=`
+        <div class="inner">
+            <div class="front">${index+1}</div>
+            <div class="back">${name}</div>
+        </div>
+        `;
+
+        card.onclick=function(){
+
+            if(!card.classList.contains("flipped")){
+                card.classList.add("flipped");
+            }
+
+        };
+
+        container.appendChild(card);
+
+    });
+
+}
+
+function shuffleCards(){
+
+    participants=
+        shuffleArray(participants);
+
+    let cards=
+        document.querySelectorAll(".card");
+
+    cards.forEach(c=>{
+        c.classList.add("shuffle");
+    });
+
+    setTimeout(()=>{
+        renderCards();
+    },1000);
+
+}
+
+function shuffleArray(arr){
+
+    for(let i=arr.length-1;i>0;i--){
+
+        let j=Math.floor(
+            Math.random()*(i+1)
+        );
+
+        [arr[i],arr[j]]=
+        [arr[j],arr[i]];
+    }
+
+    return arr;
+}
+
+</script>
+
+</body>
+</html>
